@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>日本6天自由行 - 景点预览</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f4ee;
+      --panel: #fffaf2;
+      --text: #202124;
+      --muted: #6b6258;
+      --line: #ded5c9;
+      --accent: #0f766e;
+      --accent-strong: #115e59;
+      --map: #2563eb;
+      --photo: #c2410c;
+      --copy: #4b5563;
+      --shadow: 0 12px 28px rgba(42, 34, 22, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.55;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      border-bottom: 1px solid var(--line);
+      background: rgba(247, 244, 238, 0.96);
+      backdrop-filter: blur(14px);
+    }
+
+    .wrap {
+      width: min(1120px, calc(100% - 28px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      padding: 18px 0 14px;
+    }
+
+    h1 {
+      margin: 0 0 4px;
+      font-size: clamp(22px, 4.8vw, 34px);
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 10px;
+      padding: 0 0 14px;
+    }
+
+    .search {
+      width: 100%;
+      height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0 12px;
+      color: var(--text);
+      background: #fff;
+      font-size: 16px;
+      outline: none;
+    }
+
+    .search:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.16);
+    }
+
+    .filters {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .chip {
+      min-width: 52px;
+      height: 36px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0 14px;
+      color: var(--text);
+      background: #fff;
+      font: inherit;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .chip.active {
+      border-color: var(--accent);
+      color: #fff;
+      background: var(--accent);
+    }
+
+    main {
+      padding: 18px 0 36px;
+    }
+
+    .summary {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      min-height: 310px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .preview {
+      display: grid;
+      place-items: center;
+      position: relative;
+      min-height: 150px;
+      padding: 0;
+      color: #fff;
+      background:
+        linear-gradient(135deg, rgba(15, 118, 110, 0.95), rgba(37, 99, 235, 0.78)),
+        linear-gradient(45deg, rgba(255, 255, 255, 0.12) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.12) 50%, rgba(255, 255, 255, 0.12) 75%, transparent 75%);
+      background-size: auto, 34px 34px;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .preview::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.52));
+    }
+
+    .preview img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .preview-label {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      padding: 18px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
+    }
+
+    .preview strong {
+      display: block;
+      font-size: 22px;
+      line-height: 1.2;
+    }
+
+    .preview span {
+      display: block;
+      margin-top: 6px;
+      font-size: 13px;
+      opacity: 0.92;
+    }
+
+    .body {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      gap: 10px;
+      padding: 14px;
+    }
+
+    .meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .day {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      border-radius: 999px;
+      padding: 4px 10px;
+      color: var(--accent-strong);
+      background: rgba(15, 118, 110, 0.12);
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .index {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.28;
+      letter-spacing: 0;
+    }
+
+    .alias {
+      margin: -4px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .info {
+      display: grid;
+      gap: 5px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .info div {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+      margin-top: auto;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      border-radius: 8px;
+      padding: 8px 10px;
+      color: #fff;
+      font-weight: 700;
+      text-decoration: none;
+      text-align: center;
+      border: 0;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .btn.map {
+      background: var(--map);
+    }
+
+    .btn.photo {
+      background: var(--photo);
+    }
+
+    .btn.copy {
+      grid-column: 1 / -1;
+      background: var(--copy);
+    }
+
+    .empty {
+      display: none;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      padding: 28px;
+      color: var(--muted);
+      background: rgba(255, 250, 242, 0.75);
+      text-align: center;
+    }
+
+    @media (min-width: 760px) {
+      .controls {
+        grid-template-columns: 280px minmax(0, 1fr);
+        align-items: center;
+      }
+
+      .topbar {
+        padding-top: 24px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .wrap {
+        width: min(100% - 20px, 1120px);
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .actions {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap topbar">
+      <h1>日本6天自由行景点预览</h1>
+      <p class="subtitle">手机、iPad、安卓浏览器可直接打开；点击按钮跳转地图或携程景点页。</p>
+    </div>
+    <div class="wrap controls">
+      <input id="search" class="search" type="search" placeholder="搜索景点、地址、行程日" autocomplete="off">
+      <nav class="filters" aria-label="按行程日筛选">
+        <button class="chip active" type="button" data-day="all">全部</button>
+        <button class="chip" type="button" data-day="D1">D1</button>
+        <button class="chip" type="button" data-day="D2">D2</button>
+        <button class="chip" type="button" data-day="D3">D3</button>
+        <button class="chip" type="button" data-day="D4">D4</button>
+        <button class="chip" type="button" data-day="D5">D5</button>
+        <button class="chip" type="button" data-day="D6">D6</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="summary">
+      <span id="count">共 17 个景点</span>
+      <span>更新时间：2026-04-26</span>
+    </div>
+    <section id="grid" class="grid" aria-live="polite"></section>
+    <p id="empty" class="empty">没有找到匹配的景点。</p>
+  </main>
+
+  <script>
+    const spots = [
+      {
+        id: 1,
+        day: "D1",
+        time: "D1 晚餐 / D2 晚上",
+        name: "道顿堀",
+        alias: "道頓堀 / Dotonbori",
+        address: "大阪府大阪市中央区道頓堀",
+        coord: "34.6685°N, 135.5027°E",
+        map: "https://www.google.com/maps/search/?api=1&query=34.6685,135.5027",
+        photo: "https://you.ctrip.com/sight/osaka293/49194.html",
+        image: "https://dimg04.c-ctrip.com/images/0105u12000ilz833y6FC3_W_640_10000.jpg"
+      },
+      {
+        id: 2,
+        day: "D2",
+        time: "D2 上午",
+        name: "大阪城公园",
+        alias: "大阪城公園 / Osaka Castle Park",
+        address: "大阪府大阪市中央区大阪城1-1",
+        coord: "34.6874°N, 135.5258°E",
+        map: "https://www.google.com/maps/search/?api=1&query=34.6874,135.5258",
+        photo: "https://you.ctrip.com/sight/osaka293/1734060.html",
+        image: "https://dimg04.c-ctrip.com/images/0101r12000a5mkr6569CC_W_640_10000.jpg"
+      },
+      {
+        id: 3,
+        day: "D2",
+        time: "D2 午餐",
+        name: "黑门市场",
+        alias: "黒門市場 / Kuromon Market",
+        address: "大阪府大阪市中央区日本橋2-4-1",
+        coord: "34.6646°N, 135.5070°E",
+        map: "https://www.google.com/maps/search/?api=1&query=34.6646,135.5070",
+        photo: "https://you.ctrip.com/sight/osaka293/2053031.html",
+        image: "https://dimg04.c-ctrip.com/images/0105312000ilzefq22976_W_640_10000.jpg"
+      },
+      {
+        id: 4,
+        day: "D2",
+        time: "D2 下午",
+        name: "心斋桥",
+        alias: "心斎橋 / Shinsaibashi",
+        address: "大阪府大阪市中央区心斎橋筋",
+        coord: "34.6750°N, 135.5003°E",
+        map: "https://www.google.com/maps/search/?api=1&query=34.6750,135.5003",
+        photo: "https://you.ctrip.com/sight/osaka293/46368.html",
+        image: "https://dimg04.c-ctrip.com/images/1A0p13000000tum3q1039_W_640_10000.jpg"
+      },
+      {
+        id: 5,
+        day: "D3",
+        time: "D3 上午",
+        name: "伏见稻荷大社",
+        alias: "伏見稲荷大社 / Fushimi Inari Taisha",
+        address: "京都府京都市伏見区深草藪之内町68",
+        coord: "34.9672°N, 135.7728°E",
+        map: "https://www.google.com/maps/search/?api=1&query=34.9672,135.7728",
+        photo: "https://you.ctrip.com/sight/kyoto430/110500.html",
+        image: "https://dimg04.c-ctrip.com/images/100m10000000qbn0a97F1_W_640_10000.jpg?proc=crop/m_c,w_2048,h_1365,x_0,y_1,8C35"
+      },
+      {
+        id: 6,
+        day: "D3",
+        time: "D3 中午",
+        name: "清水寺",
+        alias: "清水寺 / Kiyomizu-dera",
+        address: "京都府京都市東山区清水1-294",
+        coord: "34.9950°N, 135.7850°E",
+        map: "https://www.google.com/maps/search/?api=1&query=34.9950,135.7850",
+        photo: "https://you.ctrip.com/sight/kyoto430/13131.html",
+        image: "https://dimg04.c-ctrip.com/images/100g12000000rxyvl9084_W_640_10000.jpg"
+      },
+      {
+        id: 7,
+        day: "D3",
+        time: "D3 下午",
+        name: "二年坂·三年坂",
+        alias: "二寧坂·産寧坂 / Ninenzaka·Sannenzaka",
+        address: "京都府京都市東山区清水2丁目",
+        coord: "34.9981°N, 135.7808°E（二年坂）/ 34.9964°N, 135.7809°E（三年坂）",
+        map: "https://www.google.com/maps/search/?api=1&query=34.9981,135.7808",
+        photo: "https://you.ctrip.com/sight/kyoto430/74813.html",
+        image: "https://dimg04.c-ctrip.com/images/10040z000000nczbj49BE_W_640_10000.jpg"
+      },
+      {
+        id: 8,
+        day: "D3",
+        time: "D3 下午",
+        name: "祇园·花见小路",
+        alias: "祇園·花見小路 / Gion·Hanamikoji",
+        address: "京都府京都市東山区祇園町南側",
+        coord: "35.0020°N, 135.7750°E",
+        map: "https://www.google.com/maps/search/?api=1&query=35.0020,135.7750",
+        photo: "https://you.ctrip.com/sight/kyoto430/60775.html",
+        image: "https://dimg04.c-ctrip.com/images/100n0i0000009a3ev3A18_W_640_10000.jpg?proc=crop/m_c,w_4000,h_2666,x_0,y_67,C12B"
+      },
+      {
+        id: 9,
+        day: "D3",
+        time: "D3 晚餐",
+        name: "先斗町/鸭川",
+        alias: "先斗町·鴨川 / Pontocho·Kamogawa",
+        address: "京都府京都市中京区先斗町通",
+        coord: "35.0081°N, 135.7712°E",
+        map: "https://www.google.com/maps/search/?api=1&query=35.0081,135.7712",
+        photo: "https://you.ctrip.com/sight/kyoto430/147141.html",
+        image: "https://dimg04.c-ctrip.com/images/0101v120004ehvkhsA2EA_W_640_10000.jpg"
+      },
+      {
+        id: 10,
+        day: "D4",
+        time: "D4 上午",
+        name: "秋叶原",
+        alias: "秋葉原 / Akihabara",
+        address: "东京都千代田区外神田",
+        coord: "35.6983°N, 139.7731°E",
+        map: "https://www.google.com/maps/search/?api=1&query=35.6983,139.7731",
+        photo: "https://you.ctrip.com/sight/tokyo294/1407447.html",
+        image: "https://dimg04.c-ctrip.com/images/0105d1200082eomql8481_W_640_10000.jpg?proc=crop/m_c,w_2500,h_1666,x_0,y_1,9804"
+      },
+      {
+        id: 11,
+        day: "D4",
+        time: "D4 下午",
+        name: "银座",
+        alias: "銀座 / Ginza",
+        address: "东京都中央区銀座",
+        coord: "35.6712°N, 139.7650°E",
+        map: "https://www.google.com/maps/search/?api=1&query=35.6712,139.7650",
+        photo: "https://you.ctrip.com/sight/tokyo294/13318.html",
+        image: "https://dimg04.c-ctrip.com/images/0102n12000ilzttk690AB_W_640_10000.jpg"
+      },
+      {
+        id: 12,
+        day: "D4",
+        time: "D4 傍晚/夜景",
+        name: "六本木之丘展望台",
+        alias: "六本木ヒルズ展望台 / Roppongi Hills Tokyo City View",
+        address: "东京都港区六本木6-10-1 六本木ヒルズ森タワー52F",
+        coord: "35.6603°N, 139.7292°E",
+        map: "https://www.google.com/maps/search/?api=1&query=35.6603,139.7292",
+        photo: "https://you.ctrip.com/sight/tokyo294/149935797.html",
+        image: "https://dimg04.c-ctrip.com/images/0106f12000m3wtaho4C90_W_640_10000.jpg?proc=crop/m_c,w_2500,h_1666,x_0,y_0,A7E3"
+      },
+      {
+        id: 13,
+        day: "D5",
+        time: "D5 上午",
+        name: "富士山五合目",
+        alias: "富士スバルライン五合目 / Fuji Subaru Line 5th Station",
+        address: "山梨県南都留郡富士吉田市上吉田（海拔2305m）",
+        coord: "35.3949°N, 138.7326°E",
+        map: "https://www.google.com/maps/search/?api=1&query=35.3949,138.7326",
+        photo: "https://you.ctrip.com/sight/fujikawaguchikomachi60548/107545.html",
+        image: "https://dimg04.c-ctrip.com/images/0100912000nvhnjpb6217_W_640_10000.jpg?proc=crop/m_c,w_2500,h_1666,x_0,y_1,9804"
+      },
+      {
+        id: 14,
+        day: "D5",
+        time: "D5 中午-下午",
+        name: "河口湖",
+        alias: "河口湖 / Lake Kawaguchiko",
+        address: "山梨県南都留郡富士河口湖町",
+        coord: "35.5171°N, 138.7518°E",
+        map: "https://www.google.com/maps/search/?api=1&query=35.5171,138.7518",
+        photo: "https://you.ctrip.com/sight/fujikawaguchiko60548/86740.html",
+        image: "https://dimg04.c-ctrip.com/images/0100312000jikv1eo3D28_W_640_10000.jpg?proc=crop/m_c,w_2500,h_1666,x_0,y_0,A7E3"
+      },
+      {
+        id: 15,
+        day: "D5",
+        time: "D5 下午（可选）",
+        name: "天上山缆车",
+        alias: "富士山パノラマロープウェイ / Mt. Tenjo Ropeway",
+        address: "山梨県南都留郡富士河口湖町浅川1163-1",
+        coord: "35.5120°N, 138.7607°E",
+        map: "https://www.google.com/maps/search/?api=1&query=35.5120,138.7607",
+        photo: "https://you.ctrip.com/sight/fujikawaguchiko60548/1756157.html",
+        image: "https://dimg04.c-ctrip.com/images/10011f000001h378nB3CD_W_640_10000.jpg?proc=crop/m_c,w_4000,h_2666,x_0,y_167,AFF9"
+      },
+      {
+        id: 16,
+        day: "D5",
+        time: "D5 晚餐",
+        name: "新宿思出横丁",
+        alias: "思い出横丁 / Omoide Yokocho",
+        address: "東京都新宿区西新宿1丁目2",
+        coord: "35.6927°N, 139.6996°E",
+        map: "https://www.google.com/maps/search/?api=1&query=35.6927,139.6996",
+        photo: "https://you.ctrip.com/place/shinjukuward60626.html",
+        image: "https://dimg04.c-ctrip.com/images/1wx4m12000nhf35gt302D_W_640_0.png?_fr=wc"
+      },
+      {
+        id: 17,
+        day: "D6",
+        time: "D6 上午",
+        name: "浅草寺·雷门·仲见世",
+        alias: "浅草寺 / Sensō-ji Temple",
+        address: "東京都台東区浅草2丁目3-1",
+        coord: "35.7148°N, 139.7967°E",
+        map: "https://www.google.com/maps/search/?api=1&query=35.7148,139.7967",
+        photo: "https://you.ctrip.com/sight/tokyo294/133030.html",
+        image: "https://dimg04.c-ctrip.com/images/0106l12000kichsih9E60_W_640_10000.jpg?proc=crop/m_c,w_2500,h_1666,x_0,y_0,A7E3"
+      }
+    ];
+
+    const grid = document.querySelector("#grid");
+    const empty = document.querySelector("#empty");
+    const count = document.querySelector("#count");
+    const search = document.querySelector("#search");
+    const chips = [...document.querySelectorAll(".chip")];
+    let activeDay = "all";
+
+    function cardTemplate(spot) {
+      const haystack = `${spot.name} ${spot.alias} ${spot.address} ${spot.coord} ${spot.time}`;
+      return `
+        <article class="card" data-day="${spot.day}" data-text="${haystack.toLowerCase()}">
+          <div class="preview">
+            <img src="${spot.image}" alt="${spot.name}实景图" loading="lazy">
+            <div class="preview-label">
+              <strong>${spot.name}</strong>
+              <span>${spot.alias}</span>
+            </div>
+          </div>
+          <div class="body">
+            <div class="meta">
+              <span class="day">${spot.time}</span>
+              <span class="index">#${spot.id}</span>
+            </div>
+            <h2>${spot.name}</h2>
+            <p class="alias">${spot.alias}</p>
+            <div class="info">
+              <div><strong>地址：</strong>${spot.address}</div>
+              <div><strong>坐标：</strong>${spot.coord}</div>
+            </div>
+            <div class="actions">
+              <a class="btn map" href="${spot.map}">打开地图</a>
+              <a class="btn photo" href="${spot.photo}">携程实景</a>
+              <button class="btn copy" type="button" data-copy="${spot.name}">复制景点名</button>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function render() {
+      const keyword = search.value.trim().toLowerCase();
+      let visible = 0;
+
+      [...grid.children].forEach((card) => {
+        const matchesDay = activeDay === "all" || card.dataset.day === activeDay;
+        const matchesText = !keyword || card.dataset.text.includes(keyword);
+        const show = matchesDay && matchesText;
+        card.hidden = !show;
+        if (show) visible += 1;
+      });
+
+      count.textContent = `当前显示 ${visible} / ${spots.length} 个景点`;
+      empty.style.display = visible === 0 ? "block" : "none";
+    }
+
+    grid.innerHTML = spots.map(cardTemplate).join("");
+    search.addEventListener("input", render);
+    chips.forEach((chip) => {
+      chip.addEventListener("click", () => {
+        activeDay = chip.dataset.day;
+        chips.forEach((item) => item.classList.toggle("active", item === chip));
+        render();
+      });
+    });
+    grid.addEventListener("click", async (event) => {
+      const button = event.target.closest("[data-copy]");
+      if (!button) return;
+
+      const text = button.dataset.copy;
+      try {
+        await navigator.clipboard.writeText(text);
+        button.textContent = "已复制";
+      } catch (error) {
+        window.prompt("复制这个景点名到携程或浏览器搜索", text);
+      }
+
+      window.setTimeout(() => {
+        button.textContent = "复制景点名";
+      }, 1600);
+    });
+    render();
+  </script>
+</body>
+</html>
