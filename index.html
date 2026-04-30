@@ -142,6 +142,10 @@
       overflow: hidden;
     }
 
+    .card[hidden] {
+      display: none !important;
+    }
+
     .preview {
       display: grid;
       place-items: center;
@@ -609,6 +613,7 @@
         const matchesText = !keyword || card.dataset.text.includes(keyword);
         const show = matchesDay && matchesText;
         card.hidden = !show;
+        card.style.display = show ? "flex" : "none";
         if (show) visible += 1;
       });
 
